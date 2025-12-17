@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Airport Management System</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --muted: #94a3b8;
+      --text: #e5e7eb;
+      --accent: #38bdf8;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --bad: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu;
+      background: linear-gradient(180deg, #020617, #020617 40%, #020617);
+      color: var(--text);
+    }
+    header {
+      padding: 16px 24px; border-bottom: 1px solid #1f2937;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    header h1 { margin: 0; font-size: 20px; letter-spacing: .3px; }
+    nav a { color: var(--muted); margin-left: 16px; text-decoration: none; }
+    nav a.active, nav a:hover { color: var(--accent); }
+    main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .card {
+      grid-column: span 12; background: radial-gradient(1200px 200px at 10% -20%, #0b1220, transparent), var(--card);
+      border: 1px solid #1f2937; border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    }
+    @media (min-width: 768px) {
+      .span-6 { grid-column: span 6; }
+      .span-4 { grid-column: span 4; }
+      .span-3 { grid-column: span 3; }
+    }
+    h2 { margin: 0 0 8px; font-size: 16px; }
+    .muted { color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { padding: 10px; border-bottom: 1px solid #1f2937; text-align: left; }
+    th { color: var(--muted); font-weight: 600; }
+    .pill { padding: 4px 10px; border-radius: 999px; font-size: 12px; }
+    .ok { background: rgba(34,197,94,.15); color: var(--ok); }
+    .warn { background: rgba(245,158,11,.15); color: var(--warn); }
+    .bad { background: rgba(239,68,68,.15); color: var(--bad); }
+    .kpi { display: flex; align-items: center; justify-content: space-between; }
+    .kpi strong { font-size: 24px; }
+    button {
+      background: linear-gradient(180deg, #0ea5e9, #0284c7); color: #021018;
+      border: none; border-radius: 12px; padding: 10px 14px; cursor: pointer; font-weight: 600;
+    }
+    button.secondary { background: transparent; color: var(--accent); border: 1px solid #1f2937; }
+    footer { padding: 16px; text-align: center; color: var(--muted); }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>✈️ Airport Management System</h1>
+    <nav>
+      <a href="#" class="active" data-tab="dashboard">Dashboard</a>
+      <a href="#" data-tab="flights">Flights</a>
+      <a href="#" data-tab="gates">Gates</a>
+      <a href="#" data-tab="staff">Staff</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="grid">
+      <div class="card span-3 kpi"><div><h2>Flights Today</h2><div class="muted">Arrivals + Departures</div></div><strong id="kpiFlights">42</strong></div>
+      <div class="card span-3 kpi"><div><h2>On Time</h2><div class="muted">Performance</div></div><strong id="kpiOnTime">88%</strong></div>
+      <div class="card span-3 kpi"><div><h2>Delayed</h2><div class="muted">Current</div></div><strong id="kpiDelayed">5</strong></div>
+      <div class="card span-3 kpi"><div><h2>Active Gates</h2><div class="muted">In Use</div></div><strong id="kpiGates">12</strong></div>
+
+      <div class="card span-6">
+        <h2>Live Flights</h2>
+        <table>
+          <thead><tr><th>Flight</th><th>Route</th><th>Time</th><th>Status</th></tr></thead>
+          <tbody id="liveFlights"></tbody>
+        </table>
+      </div>
+
+      <div class="card span-6">
+        <h2>Announcements</h2>
+        <ul class="muted">
+          <li>Security drill at Terminal B (14:00–14:30)</li>
+          <li>Gate C3 under maintenance</li>
+          <li>Weather advisory: light rain expected</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- FLIGHTS -->
+    <section id="flights" class="grid hidden">
+      <div class="card span-12">
+        <h2>Flight Management</h2>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <input id="flightNo" placeholder="Flight No" />
+          <input id="route" placeholder="Route" />
+          <input id="time" placeholder="Time" />
+          <select id="status"><option>On Time</option><option>Delayed</option><option>Cancelled</option></select>
+          <button onclick="addFlight()">Add</button>
+        </div>
+        <table>
+          <thead><tr><th>Flight</th><th>Route</th><th>Time</th><th>Status</th></tr></thead>
+          <tbody id="flightTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- GATES -->
+    <section id="gates" class="grid hidden">
+      <div class="card span-12">
+        <h2>Gate Allocation</h2>
+        <table>
+          <thead><tr><th>Gate</th><th>Flight</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>A1</td><td>AI 202</td><td><span class="pill ok">Occupied</span></td></tr>
+            <tr><td>B4</td><td>—</td><td><span class="pill warn">Available</span></td></tr>
+            <tr><td>C3</td><td>—</td><td><span class="pill bad">Maintenance</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- STAFF -->
+    <section id="staff" class="grid hidden">
+      <div class="card span-12">
+        <h2>Staff Roster</h2>
+        <table>
+          <thead><tr><th>Name</th><th>Role</th><th>Shift</th></tr></thead>
+          <tbody>
+            <tr><td>R. Kumar</td><td>ATC</td><td>Morning</td></tr>
+            <tr><td>S. Mehta</td><td>Ground Ops</td><td>Evening</td></tr>
+            <tr><td>A. Das</td><td>Security</td><td>Night</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2025 Airport Management System • Static demo for GitHub Pages</footer>
+
+  <script>
+    const tabs = document.querySelectorAll('nav a');
+    const sections = document.querySelectorAll('main section');
+    tabs.forEach(a => a.onclick = (e) => {
+      e.preventDefault();
+      tabs.forEach(x => x.classList.remove('active'));
+      a.classList.add('active');
+      sections.forEach(s => s.classList.add('hidden'));
+      document.getElementById(a.dataset.tab).classList.remove('hidden');
+    });
+
+    const demoFlights = [
+      { f: 'AI 202', r: 'DEL → BOM', t: '10:30', s: 'On Time' },
+      { f: '6E 445', r: 'BLR → HYD', t: '11:10', s: 'Delayed' },
+      { f: 'UK 991', r: 'DEL → GOI', t: '12:00', s: 'On Time' }
+    ];
+
+    function pill(status){
+      if(status === 'On Time') return '<span class="pill ok">On Time</span>';
+      if(status === 'Delayed') return '<span class="pill warn">Delayed</span>';
+      return '<span class="pill bad">Cancelled</span>';
+    }
+
+    function render(){
+      const live = document.getElementById('liveFlights');
+      const table = document.getElementById('flightTable');
+      live.innerHTML = table.innerHTML = demoFlights.map(x =>
+        `<tr><td>${x.f}</td><td>${x.r}</td><td>${x.t}</td><td>${pill(x.s)}</td></tr>`
+      ).join('');
+    }
+
+    function addFlight(){
+      const f = flightNo.value.trim();
+      if(!f) return;
+      demoFlights.push({ f, r: route.value, t: time.value, s: status.value });
+      render();
+      flightNo.value = route.value = time.value = '';
+    }
+
+    render();
+  </script>
+</body>
+</html>
