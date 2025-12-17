@@ -2,28 +2,101 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Airport Management System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
-    *{box-sizing:border-box;font-family:'Poppins',sans-serif}
-    body{margin:0;min-height:100vh;background:#020617;color:#e5e7eb}
-    :root{--primary:#38bdf8;--card:#0f172a;--border:#1f2937;--muted:#94a3b8}
-    .hidden{display:none}
-    .center{display:flex;align-items:center;justify-content:center;height:100vh}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px}
-    button{padding:10px 14px;border:none;border-radius:10px;background:linear-gradient(180deg,#38bdf8,#0284c7);font-weight:600;cursor:pointer}
-    input,select{width:100%;padding:10px;margin-bottom:12px;background:#020617;border:1px solid var(--border);border-radius:10px;color:#e5e7eb}
-    header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--border)}
-    nav a{margin-left:16px;color:var(--muted);text-decoration:none}
-    nav a.active,nav a:hover{color:var(--primary)}
-    main{padding:24px;max-width:1200px;margin:auto}
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left}
-    th{color:var(--muted)}
-    .pill{padding:4px 10px;border-radius:999px;font-size:12px}
-    .ok{background:rgba(34,197,94,.15);color:#22c55e}
-    .warn{background:rgba(245,158,11,.15);color:#f59e0b}
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { margin: 0; background: #020617; color: #e5e7eb; }
+
+    :root {
+      --card: #0f172a;
+      --border: #1f2937;
+      --primary: #38bdf8;
+      --muted: #94a3b8;
+    }
+
+    .hidden { display: none; }
+    .center { display: flex; align-items: center; justify-content: center; height: 100vh; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: #e5e7eb;
+    }
+
+    button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #38bdf8, #0284c7);
+      font-weight: 600;
+      cursor: pointer;
+      color: #021018;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav a {
+      margin-left: 16px;
+      color: var(--muted);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    nav a:hover { color: var(--primary); }
+
+    main {
+      padding: 24px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    th { color: var(--muted); }
+
+    .pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .ok { background: rgba(34,197,94,.15); color: #22c55e; }
+    .warn { background: rgba(245,158,11,.15); color: #f59e0b; }
   </style>
 </head>
 <body>
@@ -33,16 +106,22 @@
   <div class="card" style="width:340px">
     <h2>✈️ Airport Login</h2>
     <p style="color:var(--muted)">Select role to continue</p>
-    <input id="username" placeholder="Username" />
-    <input id="password" type="password" placeholder="Password" />
+
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+
     <select id="role">
       <option value="admin">Admin</option>
       <option value="staff">Staff</option>
       <option value="passenger">Passenger</option>
     </select>
+
     <button onclick="login()" style="width:100%">Login</button>
-    <p style="color:var(--muted);font-size:13px;margin-top:10px">
-      Admin: admin/admin123 | Staff: staff/staff123 | Passenger: any
+
+    <p style="color:var(--muted); font-size:13px; margin-top:10px">
+      Admin: admin/admin123<br>
+      Staff: staff/staff123<br>
+      Passenger: any
     </p>
   </div>
 </div>
@@ -55,9 +134,11 @@
   </header>
 
   <main>
+
     <!-- ADMIN -->
     <section id="admin" class="hidden">
-      <h3>Admin Dashboard – Flight & Gate Control</h3>
+      <h3>Admin Dashboard</h3>
+
       <div class="card">
         <h4>Add Flight</h4>
         <input id="fNo" placeholder="Flight No">
@@ -69,10 +150,19 @@
         </select>
         <button onclick="addFlight()">Add Flight</button>
       </div>
-      <div class="card" style="margin-top:16px">
+
+      <div class="card">
         <h4>Flights & Gate Allocation</h4>
         <table>
-          <thead><tr><th>Flight</th><th>Route</th><th>Status</th><th>Gate</th><th>Action</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Flight</th>
+              <th>Route</th>
+              <th>Status</th>
+              <th>Gate</th>
+              <th>Action</th>
+            </tr>
+          </thead>
           <tbody id="adminFlights"></tbody>
         </table>
       </div>
@@ -83,7 +173,14 @@
       <h3>Staff Dashboard</h3>
       <div class="card">
         <table>
-          <thead><tr><th>Flight</th><th>Route</th><th>Status</th><th>Gate</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Flight</th>
+              <th>Route</th>
+              <th>Status</th>
+              <th>Gate</th>
+            </tr>
+          </thead>
           <tbody id="staffFlights"></tbody>
         </table>
       </div>
@@ -94,70 +191,178 @@
       <h3>Passenger Information Display</h3>
       <div class="card">
         <table>
-          <tr><th>Flight</th><th>Route</th><th>Status</th></tr>
-          <tr><td>AI 202</td><td>DEL → BOM</td><td><span class="pill ok">On Time</span></td></tr>
-          <tr><td>6E 445</td><td>BLR → HYD</td><td><span class="pill warn">Delayed</span></td></tr>
+          <thead>
+            <tr>
+              <th>Flight</th>
+              <th>Route</th>
+              <th>Status</th>
+              <th>Gate</th>
+            </tr>
+          </thead>
+          <tbody id="passengerFlights"></tbody>
         </table>
       </div>
     </section>
-      
+
     <!-- ANALYTICS -->
     <section id="analytics" class="hidden">
       <h3>Analytics</h3>
-      <div class="card"><canvas id="delayChart"></canvas></div>
-      <div class="card" style="margin-top:16px"><canvas id="gateChart"></canvas></div>
+      <div class="card">
+        <canvas id="delayChart"></canvas>
+      </div>
+      <div class="card">
+        <canvas id="gateChart"></canvas>
+      </div>
     </section>
+
   </main>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const loginBox=document.getElementById('login');
-  const app=document.getElementById('app');
-  const nav=document.getElementById('nav');
-  let flights=JSON.parse(localStorage.getItem('flights'))||[];
-  const gates=['A1','A2','B1','B2','C1'];
+  const loginBox = document.getElementById('login');
+  const app = document.getElementById('app');
+  const nav = document.getElementById('nav');
 
-  if(localStorage.getItem('role')) showApp(localStorage.getItem('role'));
+  let flights = JSON.parse(localStorage.getItem('flights')) || [];
+  const gates = ['A1','A2','B1','B2','C1'];
 
-  function login(){
-    const u=username.value,p=password.value,r=role.value;
-    if(r==='admin'&&u==='admin'&&p==='admin123'||r==='staff'&&u==='staff'&&p==='staff123'||r==='passenger'){
-      localStorage.setItem('role',r);showApp(r);
-    } else alert('Invalid credentials');
+  if (localStorage.getItem('role')) {
+    showApp(localStorage.getItem('role'));
   }
-  function logout(){localStorage.clear();location.reload();}
 
-  function showApp(r){
-    loginBox.classList.add('hidden');app.classList.remove('hidden');
-    nav.innerHTML=`<a class='active'>${r.toUpperCase()}</a>${r!=='passenger'?"<a href='#' onclick=\"showSection('analytics')\">Analytics</a>":''}<a href='#' onclick='logout()'>Logout</a>`;
-    document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+  function login() {
+    const u = username.value;
+    const p = password.value;
+    const r = role.value;
+
+    if (
+      (r === 'admin' && u === 'admin' && p === 'admin123') ||
+      (r === 'staff' && u === 'staff' && p === 'staff123') ||
+      r === 'passenger'
+    ) {
+      localStorage.setItem('role', r);
+      showApp(r);
+    } else {
+      alert('Invalid credentials');
+    }
+  }
+
+  function logout() {
+    localStorage.clear();
+    location.reload();
+  }
+
+  function showApp(r) {
+    loginBox.classList.add('hidden');
+    app.classList.remove('hidden');
+
+    nav.innerHTML = `
+      <a>${r.toUpperCase()}</a>
+      ${r !== 'passenger' ? `<a onclick="showSection('analytics')">Analytics</a>` : ''}
+      <a onclick="logout()">Logout</a>
+    `;
+
+    document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
     document.getElementById(r).classList.remove('hidden');
-    render();
-    if(r!=='passenger') renderCharts();
+
+    renderTables();
+    if (r !== 'passenger') renderCharts();
   }
 
-  function showSection(id){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
-
-  function assignGate(){const used=flights.map(f=>f.gate).filter(Boolean);return gates.find(g=>!used.includes(g))||'—';}
-
-  function addFlight(){if(!fNo.value)return;let gate='—';if(fStatus.value==='On Time')gate=assignGate();flights.push({no:fNo.value,route:fRoute.value,status:fStatus.value,gate});save();render();}
-
-  function cancelFlight(i){flights[i].status='Cancelled';flights[i].gate='—';save();render();}
-
-  function save(){localStorage.setItem('flights',JSON.stringify(flights));}
-
-  function render(){
-    adminFlights&&(adminFlights.innerHTML=flights.map((f,i)=>`<tr><td>${f.no}</td><td>${f.route}</td><td>${f.status}</td><td>${f.gate}</td><td><button onclick='cancelFlight(${i})'>Cancel</button></td></tr>`).join(''));
-    staffFlights&&(staffFlights.innerHTML=flights.map(f=>`<tr><td>${f.no}</td><td>${f.route}</td><td>${f.status}</td><td>${f.gate}</td></tr>`).join(''));
+  function showSection(id) {
+    document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
   }
 
-  function renderCharts(){
-    const delayed=flights.filter(f=>f.status==='Delayed').length;
-    const ontime=flights.filter(f=>f.status==='On Time').length;
-    new Chart(delayChart,{type:'pie',data:{labels:['On Time','Delayed'],datasets:[{data:[ontime,delayed]}]}});
-    const used=gates.map(g=>flights.filter(f=>f.gate===g).length);
-    new Chart(gateChart,{type:'bar',data:{labels:gates,datasets:[{data:used}]}});
+  function assignGate() {
+    const used = flights.map(f => f.gate).filter(g => g && g !== '—');
+    return gates.find(g => !used.includes(g)) || '—';
+  }
+
+  function addFlight() {
+    if (!fNo.value) return;
+    let gate = fStatus.value === 'On Time' ? assignGate() : '—';
+
+    flights.push({
+      no: fNo.value,
+      route: fRoute.value,
+      status: fStatus.value,
+      gate
+    });
+
+    save();
+    renderTables();
+    fNo.value = fRoute.value = '';
+  }
+
+  function cancelFlight(i) {
+    flights[i].status = 'Cancelled';
+    flights[i].gate = '—';
+    save();
+    renderTables();
+  }
+
+  function save() {
+    localStorage.setItem('flights', JSON.stringify(flights));
+  }
+
+  function renderTables() {
+    if (adminFlights) {
+      adminFlights.innerHTML = flights.map((f, i) => `
+        <tr>
+          <td>${f.no}</td>
+          <td>${f.route}</td>
+          <td>${f.status}</td>
+          <td>${f.gate}</td>
+          <td><button onclick="cancelFlight(${i})">Cancel</button></td>
+        </tr>
+      `).join('');
+    }
+
+    if (staffFlights) {
+      staffFlights.innerHTML = flights.map(f => `
+        <tr>
+          <td>${f.no}</td>
+          <td>${f.route}</td>
+          <td>${f.status}</td>
+          <td>${f.gate}</td>
+        </tr>
+      `).join('');
+    }
+
+    if (passengerFlights) {
+      passengerFlights.innerHTML = flights.map(f => `
+        <tr>
+          <td>${f.no}</td>
+          <td>${f.route}</td>
+          <td>${f.status}</td>
+          <td>${f.gate}</td>
+        </tr>
+      `).join('');
+    }
+  }
+
+  function renderCharts() {
+    const ontime = flights.filter(f => f.status === 'On Time').length;
+    const delayed = flights.filter(f => f.status === 'Delayed').length;
+
+    new Chart(delayChart, {
+      type: 'pie',
+      data: {
+        labels: ['On Time', 'Delayed'],
+        datasets: [{ data: [ontime, delayed] }]
+      }
+    });
+
+    new Chart(gateChart, {
+      type: 'bar',
+      data: {
+        labels: gates,
+        datasets: [{
+          data: gates.map(g => flights.filter(f => f.gate === g).length)
+        }]
+      }
+    });
   }
 </script>
 
