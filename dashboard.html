@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Airport Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { margin: 0; background: #020617; color: #e5e7eb; }
+
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #020617;
+    }
+
+    nav a {
+      margin-left: 16px;
+      color: #94a3b8;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    nav a:hover { color: #38bdf8; }
+
+    main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 24px;
+      animation: fade .6s ease;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .card {
+      background: #0f172a;
+      border: 1px solid #1f2937;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #1f2937;
+      text-align: left;
+    }
+
+    th { color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+<script>
+  const role = localStorage.getItem('role');
+  if (!role) window.location.href = 'index.html';
+</script>
+
+<header>
+  <h2>✈️ Airport Dashboard</h2>
+  <nav>
+    <span id="roleText"></span>
+    <a onclick="logout()">Logout</a>
+  </nav>
+</header>
+
+<main>
+  <div class="card">
+    <h3>Live Flights</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Flight</th>
+          <th>Route</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>AI 202</td><td>DEL → BOM</td><td>On Time</td></tr>
+        <tr><td>6E 445</td><td>BLR → HYD</td><td>Delayed</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+  roleText.innerText = role.toUpperCase();
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+</script>
+
+</body>
+</html>
