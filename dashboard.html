@@ -9,13 +9,32 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-*{box-sizing:border-box;font-family:Poppins}
-body{margin:0;background:#020617;color:#e5e7eb}
+*{box-sizing:border-box;font-family:Poppins;transition:background .2s,color .2s}
 
-/* HEADER */
+/* ---------- THEME VARIABLES ---------- */
+:root{
+  --bg:#020617;
+  --card:#0f172a;
+  --border:#1f2937;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --primary:#38bdf8;
+}
+.light{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#020617;
+  --muted:#475569;
+  --primary:#0284c7;
+}
+
+body{margin:0;background:var(--bg);color:var(--text)}
+
+/* ---------- HEADER ---------- */
 header{
   padding:14px 18px;
-  border-bottom:1px solid #1f2937;
+  border-bottom:1px solid var(--border);
   display:flex;
   flex-wrap:wrap;
   gap:10px;
@@ -27,15 +46,16 @@ nav{
   flex-wrap:wrap;
   gap:12px;
 }
-nav a{
-  color:#94a3b8;
+nav a, nav button{
+  color:var(--muted);
   cursor:pointer;
-  text-decoration:none;
+  background:none;
+  border:none;
   font-size:14px;
 }
-nav a:hover{color:#38bdf8}
+nav a:hover, nav button:hover{color:var(--primary)}
 
-/* LAYOUT */
+/* ---------- LAYOUT ---------- */
 main{max-width:1200px;margin:auto;padding:16px}
 .grid{
   display:grid;
@@ -43,8 +63,8 @@ main{max-width:1200px;margin:auto;padding:16px}
   gap:16px;
 }
 .card{
-  background:#0f172a;
-  border:1px solid #1f2937;
+  background:var(--card);
+  border:1px solid var(--border);
   border-radius:16px;
   padding:16px;
 }
@@ -52,61 +72,51 @@ main{max-width:1200px;margin:auto;padding:16px}
 .span-6{grid-column:span 6}
 .span-12{grid-column:span 12}
 
-/* MOBILE GRID */
 @media(max-width:768px){
   .span-3,.span-6,.span-12{grid-column:span 12}
 }
 
-/* FORMS */
-input,select,button{
+/* ---------- FORMS ---------- */
+input,select,button.action{
   width:100%;
   padding:10px;
   margin:6px 0;
-  background:#020617;
-  color:white;
-  border:1px solid #1f2937;
+  background:var(--bg);
+  color:var(--text);
+  border:1px solid var(--border);
   border-radius:10px;
-  font-size:14px;
 }
-button{
-  background:#38bdf8;
-  color:#021018;
+button.action{
+  background:var(--primary);
+  color:white;
   font-weight:600;
-  cursor:pointer;
 }
-button.danger{background:#ef4444;color:white}
+button.delete{
+  background:#ef4444;
+  color:white;
+}
 
-/* TABLE */
-.table-wrap{
-  overflow-x:auto;
-}
+/* ---------- TABLE ---------- */
+.table-wrap{overflow-x:auto}
 table{
   width:100%;
-  min-width:700px;
+  min-width:750px;
   border-collapse:collapse;
 }
 th,td{
   padding:10px;
-  border-bottom:1px solid #1f2937;
+  border-bottom:1px solid var(--border);
   text-align:left;
 }
-th{color:#94a3b8}
+th{color:var(--muted)}
 
-/* STATUS */
+/* ---------- STATUS ---------- */
 .pill{padding:4px 10px;border-radius:999px;font-size:12px}
 .ok{background:rgba(34,197,94,.15);color:#22c55e}
 .warn{background:rgba(245,158,11,.15);color:#f59e0b}
 .bad{background:rgba(239,68,68,.15);color:#ef4444}
 
 .hidden{display:none}
-
-/* KPI */
-.kpi h1{margin:4px 0;font-size:28px}
-@media(max-width:768px){
-  .kpi h1{font-size:22px}
-}
-
-/* CHARTS */
 canvas{max-width:100%}
 </style>
 </head>
@@ -115,6 +125,9 @@ canvas{max-width:100%}
 <script>
 const role = localStorage.getItem('role');
 if(!role) location.href='index.html';
+
+const savedTheme = localStorage.getItem('theme');
+if(savedTheme === 'light') document.body.classList.add('light');
 </script>
 
 <header>
@@ -123,22 +136,21 @@ if(!role) location.href='index.html';
 <span id="roleText"></span>
 <a onclick="show('dashboard')">Dashboard</a>
 <a onclick="show('analytics')">Analytics</a>
+<button onclick="toggleTheme()">🌙 / ☀️</button>
 <a onclick="logout()">Logout</a>
 </nav>
 </header>
 
 <main>
 
-<!-- DASHBOARD -->
 <section id="dashboard">
 <div class="grid">
 
-<div class="card span-3 kpi"><h3>Total Flights</h3><h1 id="kFlights">0</h1></div>
-<div class="card span-3 kpi"><h3>On Time</h3><h1 id="kOn">0</h1></div>
-<div class="card span-3 kpi"><h3>Delayed</h3><h1 id="kDelay">0</h1></div>
-<div class="card span-3 kpi"><h3>Gates</h3><h1>5</h1></div>
+<div class="card span-3"><h3>Total Flights</h3><h1 id="kFlights">0</h1></div>
+<div class="card span-3"><h3>On Time</h3><h1 id="kOn">0</h1></div>
+<div class="card span-3"><h3>Delayed</h3><h1 id="kDelay">0</h1></div>
+<div class="card span-3"><h3>Gates</h3><h1>5</h1></div>
 
-<!-- ADMIN -->
 <div class="card span-12" id="adminPanel">
 <h3>Add Flight</h3>
 <input id="fNo" placeholder="Flight No">
@@ -155,22 +167,17 @@ if(!role) location.href='index.html';
 <option>B1</option><option>B2</option>
 <option>C1</option>
 </select>
-<button onclick="addFlight()">Add Flight</button>
+<button class="action" onclick="addFlight()">Add Flight</button>
 </div>
 
-<!-- TABLE -->
 <div class="card span-12">
 <h3>Flights</h3>
 <div class="table-wrap">
 <table>
 <thead>
 <tr>
-<th>Flight</th>
-<th>Route</th>
-<th>Time</th>
-<th>Status</th>
-<th>Gate</th>
-<th>Actions</th>
+<th>Flight</th><th>Route</th><th>Time</th>
+<th>Status</th><th>Gate</th><th>Actions</th>
 </tr>
 </thead>
 <tbody id="table"></tbody>
@@ -181,7 +188,6 @@ if(!role) location.href='index.html';
 </div>
 </section>
 
-<!-- ANALYTICS -->
 <section id="analytics" class="hidden">
 <div class="grid">
 <div class="card span-6"><canvas id="delayChart"></canvas></div>
@@ -197,6 +203,12 @@ if(role!=='admin') adminPanel.classList.add('hidden');
 
 let flights = JSON.parse(localStorage.getItem('flights')) || [];
 const gates = ['A1','A2','B1','B2','C1'];
+
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  localStorage.setItem('theme',
+    document.body.classList.contains('light')?'light':'dark');
+}
 
 function show(id){
   document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
@@ -215,7 +227,7 @@ function addFlight(){
     route:fRoute.value,
     time:fTime.value,
     status:fStatus.value,
-    gate:fGate.value || autoGate()
+    gate:fGate.value||autoGate()
   });
   save(); render();
   fNo.value=fRoute.value=fTime.value=fGate.value='';
@@ -252,25 +264,19 @@ function render(){
   <tr>
     <td>${f.no}</td>
     <td>${f.route}</td>
-    <td>
-      ${role==='admin'
-        ? `<input type="time" value="${f.time||''}" onchange="updateTime(${i},this.value)">`
-        : (f.time||'—')}
-    </td>
+    <td>${role==='admin'
+      ? `<input type="time" value="${f.time||''}" onchange="updateTime(${i},this.value)">`
+      : (f.time||'—')}</td>
     <td>${badge(f.status)}</td>
-    <td>
-      ${role==='admin'
-        ? `<select onchange="updateGate(${i},this.value)">
-            ${gates.map(g=>`<option ${f.gate===g?'selected':''}>${g}</option>`).join('')}
-          </select>`
-        : f.gate}
-    </td>
-    <td>
-      ${role==='admin'
-        ? `<button onclick="cancelFlight(${i})">Cancel</button>
-           <button class="danger" onclick="deleteFlight(${i})">Delete</button>`
-        : ''}
-    </td>
+    <td>${role==='admin'
+      ? `<select onchange="updateGate(${i},this.value)">
+          ${gates.map(g=>`<option ${f.gate===g?'selected':''}>${g}</option>`).join('')}
+        </select>`
+      : f.gate}</td>
+    <td>${role==='admin'
+      ? `<button class="action" onclick="cancelFlight(${i})">Cancel</button>
+         <button class="delete" onclick="deleteFlight(${i})">Delete</button>`
+      : ''}</td>
   </tr>`).join('');
 
   kFlights.innerText = flights.length;
