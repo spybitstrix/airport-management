@@ -1,109 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Airport Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Airport Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <style>
-    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-    body { margin: 0; background: #020617; color: #e5e7eb; }
-
-    header {
-      padding: 16px 24px;
-      border-bottom: 1px solid #1f2937;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #020617;
-    }
-
-    nav a {
-      margin-left: 16px;
-      color: #94a3b8;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    nav a:hover { color: #38bdf8; }
-
-    main {
-      max-width: 1200px;
-      margin: auto;
-      padding: 24px;
-      animation: fade .6s ease;
-    }
-
-    @keyframes fade {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .card {
-      background: #0f172a;
-      border: 1px solid #1f2937;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #1f2937;
-      text-align: left;
-    }
-
-    th { color: #94a3b8; }
-  </style>
+<style>
+*{box-sizing:border-box;font-family:Poppins}
+body{margin:0;background:#020617;color:#e5e7eb}
+header{
+  padding:16px 24px;border-bottom:1px solid #1f2937;
+  display:flex;justify-content:space-between;align-items:center;
+}
+nav a{margin-left:16px;color:#94a3b8;cursor:pointer;text-decoration:none}
+nav a:hover{color:#38bdf8}
+main{max-width:1200px;margin:auto;padding:24px}
+.card{
+  background:#0f172a;border:1px solid #1f2937;
+  border-radius:16px;padding:16px;margin-bottom:16px;
+}
+input,select,button{
+  padding:10px;margin:5px 0;
+  background:#020617;color:white;
+  border:1px solid #1f2937;border-radius:8px;
+}
+button{background:#38bdf8;color:#021018;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;border-bottom:1px solid #1f2937;text-align:left}
+th{color:#94a3b8}
+.hidden{display:none}
+</style>
 </head>
 <body>
 
 <script>
-  const role = localStorage.getItem('role');
-  if (!role) window.location.href = 'index.html';
+const role=localStorage.getItem('role');
+if(!role)location.href='index.html';
 </script>
 
 <header>
-  <h2>✈️ Airport Dashboard</h2>
-  <nav>
-    <span id="roleText"></span>
-    <a onclick="logout()">Logout</a>
-  </nav>
+<h2>✈️ Airport Dashboard</h2>
+<nav>
+<span id="roleText"></span>
+<a onclick="show('dashboard')">Dashboard</a>
+<a onclick="show('analytics')">Analytics</a>
+<a onclick="logout()">Logout</a>
+</nav>
 </header>
 
 <main>
-  <div class="card">
-    <h3>Live Flights</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Flight</th>
-          <th>Route</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>AI 202</td><td>DEL → BOM</td><td>On Time</td></tr>
-        <tr><td>6E 445</td><td>BLR → HYD</td><td>Delayed</td></tr>
-      </tbody>
-    </table>
-  </div>
+
+<section id="dashboard">
+<div class="card" id="adminPanel">
+<h3>Add Flight</h3>
+<input id="fNo" placeholder="Flight No">
+<input id="fRoute" placeholder="Route">
+<select id="fStatus">
+<option>On Time</option>
+<option>Delayed</option>
+<option>Cancelled</option>
+</select>
+<button onclick="addFlight()">Add</button>
+</div>
+
+<div class="card">
+<h3>Flights</h3>
+<table>
+<thead><tr><th>Flight</th><th>Route</th><th>Status</th><th>Gate</th><th>Action</th></tr></thead>
+<tbody id="table"></tbody>
+</table>
+</div>
+</section>
+
+<section id="analytics" class="hidden">
+<div class="card"><canvas id="delayChart"></canvas></div>
+<div class="card"><canvas id="gateChart"></canvas></div>
+</section>
+
 </main>
 
 <script>
-  roleText.innerText = role.toUpperCase();
+roleText.innerText=role.toUpperCase();
+if(role!=='admin')adminPanel.classList.add('hidden');
 
-  function logout() {
-    localStorage.clear();
-    window.location.href = 'index.html';
-  }
+let flights=JSON.parse(localStorage.getItem('flights'))||[];
+const gates=['A1','A2','B1','B2','C1'];
+
+function show(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  if(id==='analytics')drawCharts();
+}
+
+function assignGate(){
+  const used=flights.map(f=>f.gate);
+  return gates.find(g=>!used.includes(g))||'—';
+}
+
+function addFlight(){
+  let gate=fStatus.value==='On Time'?assignGate():'—';
+  flights.push({no:fNo.value,route:fRoute.value,status:fStatus.value,gate});
+  save();render();
+}
+
+function cancel(i){
+  flights[i].status='Cancelled';
+  flights[i].gate='—';
+  save();render();
+}
+
+function save(){
+  localStorage.setItem('flights',JSON.stringify(flights));
+}
+
+function render(){
+  table.innerHTML=flights.map((f,i)=>`
+  <tr>
+    <td>${f.no}</td><td>${f.route}</td>
+    <td>${f.status}</td><td>${f.gate}</td>
+    <td>${role==='admin'?`<button onclick="cancel(${i})">Cancel</button>`:''}</td>
+  </tr>`).join('');
+}
+render();
+
+function drawCharts(){
+  new Chart(delayChart,{
+    type:'pie',
+    data:{labels:['On Time','Delayed'],
+    datasets:[{data:[
+      flights.filter(f=>f.status==='On Time').length,
+      flights.filter(f=>f.status==='Delayed').length
+    ]}]}
+  });
+
+  new Chart(gateChart,{
+    type:'bar',
+    data:{labels:gates,
+    datasets:[{data:gates.map(g=>flights.filter(f=>f.gate===g).length)}]}
+  });
+}
+
+function logout(){
+  localStorage.clear();
+  location.href='index.html';
+}
 </script>
 
 </body>
