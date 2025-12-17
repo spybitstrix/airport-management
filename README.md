@@ -89,7 +89,7 @@ Our solution centralizes airport operations into **one smart system** with autom
 
 ## 👥 Team
 
-Built in 24 hours for a hackathon challenge.
+Built in 24 hours for a hackathon challenge/college projects.
 
 ---
 
