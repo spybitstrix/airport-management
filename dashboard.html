@@ -11,106 +11,61 @@
 <style>
 *{box-sizing:border-box;font-family:Poppins;transition:background .2s,color .2s}
 
-/* ---------- THEME VARIABLES ---------- */
+/* THEME */
 :root{
-  --bg:#020617;
-  --card:#0f172a;
-  --border:#1f2937;
-  --text:#e5e7eb;
-  --muted:#94a3b8;
-  --primary:#38bdf8;
+  --bg:#020617;--card:#0f172a;--border:#1f2937;
+  --text:#e5e7eb;--muted:#94a3b8;--primary:#38bdf8;
 }
 .light{
-  --bg:#f8fafc;
-  --card:#ffffff;
-  --border:#e5e7eb;
-  --text:#020617;
-  --muted:#475569;
-  --primary:#0284c7;
+  --bg:#f8fafc;--card:#ffffff;--border:#e5e7eb;
+  --text:#020617;--muted:#475569;--primary:#0284c7;
 }
 
 body{margin:0;background:var(--bg);color:var(--text)}
 
-/* ---------- HEADER ---------- */
+/* HEADER */
 header{
-  padding:14px 18px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  justify-content:space-between;
-  align-items:center;
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  display:flex;flex-wrap:wrap;gap:10px;
+  justify-content:space-between;align-items:center;
 }
-nav{
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
+nav{display:flex;flex-wrap:wrap;gap:12px}
+nav a,nav button{
+  background:none;border:none;cursor:pointer;
+  color:var(--muted);font-size:14px;
 }
-nav a, nav button{
-  color:var(--muted);
-  cursor:pointer;
-  background:none;
-  border:none;
-  font-size:14px;
-}
-nav a:hover, nav button:hover{color:var(--primary)}
+nav a:hover,nav button:hover{color:var(--primary)}
 
-/* ---------- LAYOUT ---------- */
+/* LAYOUT */
 main{max-width:1200px;margin:auto;padding:16px}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(12,1fr);
-  gap:16px;
-}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
 .card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:16px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:16px;
 }
 .span-3{grid-column:span 3}
 .span-6{grid-column:span 6}
 .span-12{grid-column:span 12}
-
 @media(max-width:768px){
   .span-3,.span-6,.span-12{grid-column:span 12}
 }
 
-/* ---------- FORMS ---------- */
+/* FORMS */
 input,select,button.action{
-  width:100%;
-  padding:10px;
-  margin:6px 0;
-  background:var(--bg);
-  color:var(--text);
-  border:1px solid var(--border);
-  border-radius:10px;
+  width:100%;padding:10px;margin:6px 0;
+  background:var(--bg);color:var(--text);
+  border:1px solid var(--border);border-radius:10px;
 }
-button.action{
-  background:var(--primary);
-  color:white;
-  font-weight:600;
-}
-button.delete{
-  background:#ef4444;
-  color:white;
-}
+button.action{background:var(--primary);color:white;font-weight:600}
+button.danger{background:#ef4444;color:white}
 
-/* ---------- TABLE ---------- */
+/* TABLE */
 .table-wrap{overflow-x:auto}
-table{
-  width:100%;
-  min-width:750px;
-  border-collapse:collapse;
-}
-th,td{
-  padding:10px;
-  border-bottom:1px solid var(--border);
-  text-align:left;
-}
+table{width:100%;min-width:750px;border-collapse:collapse}
+th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left}
 th{color:var(--muted)}
 
-/* ---------- STATUS ---------- */
+/* STATUS */
 .pill{padding:4px 10px;border-radius:999px;font-size:12px}
 .ok{background:rgba(34,197,94,.15);color:#22c55e}
 .warn{background:rgba(245,158,11,.15);color:#f59e0b}
@@ -126,8 +81,8 @@ canvas{max-width:100%}
 const role = localStorage.getItem('role');
 if(!role) location.href='index.html';
 
-const savedTheme = localStorage.getItem('theme');
-if(savedTheme === 'light') document.body.classList.add('light');
+if(localStorage.getItem('theme')==='light')
+  document.body.classList.add('light');
 </script>
 
 <header>
@@ -151,8 +106,10 @@ if(savedTheme === 'light') document.body.classList.add('light');
 <div class="card span-3"><h3>Delayed</h3><h1 id="kDelay">0</h1></div>
 <div class="card span-3"><h3>Gates</h3><h1>5</h1></div>
 
+<!-- ADMIN CONTROLS -->
 <div class="card span-12" id="adminPanel">
-<h3>Add Flight</h3>
+<h3>Admin Controls</h3>
+
 <input id="fNo" placeholder="Flight No">
 <input id="fRoute" placeholder="Route">
 <input id="fTime" type="time">
@@ -167,7 +124,10 @@ if(savedTheme === 'light') document.body.classList.add('light');
 <option>B1</option><option>B2</option>
 <option>C1</option>
 </select>
+
 <button class="action" onclick="addFlight()">Add Flight</button>
+<button class="action" onclick="exportCSV()">Export CSV</button>
+<button class="danger" onclick="clearAll()">Clear All Flights</button>
 </div>
 
 <div class="card span-12">
@@ -223,11 +183,8 @@ function autoGate(){
 
 function addFlight(){
   flights.push({
-    no:fNo.value,
-    route:fRoute.value,
-    time:fTime.value,
-    status:fStatus.value,
-    gate:fGate.value||autoGate()
+    no:fNo.value, route:fRoute.value, time:fTime.value,
+    status:fStatus.value, gate:fGate.value||autoGate()
   });
   save(); render();
   fNo.value=fRoute.value=fTime.value=fGate.value='';
@@ -244,9 +201,26 @@ function cancelFlight(i){
 
 function deleteFlight(i){
   if(confirm('Delete this flight permanently?')){
-    flights.splice(i,1);
-    save(); render();
+    flights.splice(i,1); save(); render();
   }
+}
+
+function clearAll(){
+  if(confirm('Clear ALL flights?')){
+    flights=[]; save(); render();
+  }
+}
+
+function exportCSV(){
+  let csv='Flight,Route,Time,Status,Gate\n';
+  flights.forEach(f=>{
+    csv+=`${f.no},${f.route},${f.time},${f.status},${f.gate}\n`;
+  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='flights.csv';
+  a.click();
 }
 
 function save(){
@@ -275,7 +249,7 @@ function render(){
       : f.gate}</td>
     <td>${role==='admin'
       ? `<button class="action" onclick="cancelFlight(${i})">Cancel</button>
-         <button class="delete" onclick="deleteFlight(${i})">Delete</button>`
+         <button class="danger" onclick="deleteFlight(${i})">Delete</button>`
       : ''}</td>
   </tr>`).join('');
 
@@ -304,7 +278,7 @@ function drawCharts(){
 }
 
 function logout(){
-  localStorage.clear();
+  localStorage.removeItem('role'); // keep flights + theme
   location.href='index.html';
 }
 </script>
