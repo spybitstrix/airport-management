@@ -9,9 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-*{box-sizing:border-box;font-family:Poppins;transition:background .2s,color .2s}
+*{box-sizing:border-box;font-family:Poppins;transition:.2s}
 
-/* THEME */
+/* THEMES */
 :root{
   --bg:#020617;--card:#0f172a;--border:#1f2937;
   --text:#e5e7eb;--muted:#94a3b8;--primary:#38bdf8;
@@ -23,20 +23,17 @@
 
 body{margin:0;background:var(--bg);color:var(--text)}
 
-/* HEADER */
 header{
   padding:14px 18px;border-bottom:1px solid var(--border);
-  display:flex;flex-wrap:wrap;gap:10px;
-  justify-content:space-between;align-items:center;
+  display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;
 }
-nav{display:flex;flex-wrap:wrap;gap:12px}
+nav{display:flex;gap:12px;flex-wrap:wrap}
 nav a,nav button{
-  background:none;border:none;cursor:pointer;
-  color:var(--muted);font-size:14px;
+  background:none;border:none;color:var(--muted);
+  cursor:pointer;font-size:14px;
 }
 nav a:hover,nav button:hover{color:var(--primary)}
 
-/* LAYOUT */
 main{max-width:1200px;margin:auto;padding:16px}
 .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
 .card{
@@ -50,7 +47,6 @@ main{max-width:1200px;margin:auto;padding:16px}
   .span-3,.span-6,.span-12{grid-column:span 12}
 }
 
-/* FORMS */
 input,select,button.action{
   width:100%;padding:10px;margin:6px 0;
   background:var(--bg);color:var(--text);
@@ -59,13 +55,11 @@ input,select,button.action{
 button.action{background:var(--primary);color:white;font-weight:600}
 button.danger{background:#ef4444;color:white}
 
-/* TABLE */
 .table-wrap{overflow-x:auto}
 table{width:100%;min-width:750px;border-collapse:collapse}
-th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left}
+th,td{padding:10px;border-bottom:1px solid var(--border)}
 th{color:var(--muted)}
 
-/* STATUS */
 .pill{padding:4px 10px;border-radius:999px;font-size:12px}
 .ok{background:rgba(34,197,94,.15);color:#22c55e}
 .warn{background:rgba(245,158,11,.15);color:#f59e0b}
@@ -80,9 +74,7 @@ canvas{max-width:100%}
 <script>
 const role = localStorage.getItem('role');
 if(!role) location.href='index.html';
-
-if(localStorage.getItem('theme')==='light')
-  document.body.classList.add('light');
+if(localStorage.getItem('theme')==='light') document.body.classList.add('light');
 </script>
 
 <header>
@@ -106,17 +98,13 @@ if(localStorage.getItem('theme')==='light')
 <div class="card span-3"><h3>Delayed</h3><h1 id="kDelay">0</h1></div>
 <div class="card span-3"><h3>Gates</h3><h1>5</h1></div>
 
-<!-- ADMIN CONTROLS -->
 <div class="card span-12" id="adminPanel">
 <h3>Admin Controls</h3>
-
 <input id="fNo" placeholder="Flight No">
 <input id="fRoute" placeholder="Route">
 <input id="fTime" type="time">
 <select id="fStatus">
-<option>On Time</option>
-<option>Delayed</option>
-<option>Cancelled</option>
+<option>On Time</option><option>Delayed</option><option>Cancelled</option>
 </select>
 <select id="fGate">
 <option value="">Auto Gate</option>
@@ -124,7 +112,6 @@ if(localStorage.getItem('theme')==='light')
 <option>B1</option><option>B2</option>
 <option>C1</option>
 </select>
-
 <button class="action" onclick="addFlight()">Add Flight</button>
 <button class="action" onclick="exportCSV()">Export CSV</button>
 <button class="danger" onclick="clearAll()">Clear All Flights</button>
@@ -162,7 +149,7 @@ roleText.innerText = role.toUpperCase();
 if(role!=='admin') adminPanel.classList.add('hidden');
 
 let flights = JSON.parse(localStorage.getItem('flights')) || [];
-const gates = ['A1','A2','B1','B2','C1'];
+const gates=['A1','A2','B1','B2','C1'];
 
 function toggleTheme(){
   document.body.classList.toggle('light');
@@ -177,16 +164,16 @@ function show(id){
 }
 
 function autoGate(){
-  const used = flights.map(f=>f.gate);
-  return gates.find(g=>!used.includes(g)) || '—';
+  const used=flights.map(f=>f.gate);
+  return gates.find(g=>!used.includes(g))||'—';
 }
 
 function addFlight(){
   flights.push({
-    no:fNo.value, route:fRoute.value, time:fTime.value,
-    status:fStatus.value, gate:fGate.value||autoGate()
+    no:fNo.value,route:fRoute.value,time:fTime.value,
+    status:fStatus.value,gate:fGate.value||autoGate()
   });
-  save(); render();
+  save();render();
   fNo.value=fRoute.value=fTime.value=fGate.value='';
 }
 
@@ -196,25 +183,26 @@ function updateGate(i,v){flights[i].gate=v;save()}
 function cancelFlight(i){
   flights[i].status='Cancelled';
   flights[i].gate='—';
-  save(); render();
+  save();render();
 }
 
 function deleteFlight(i){
   if(confirm('Delete this flight permanently?')){
-    flights.splice(i,1); save(); render();
+    flights.splice(i,1);save();render();
   }
 }
 
 function clearAll(){
   if(confirm('Clear ALL flights?')){
-    flights=[]; save(); render();
+    flights=[];save();render();
   }
 }
 
 function exportCSV(){
+  if(!flights.length){alert('No flights to export');return;}
   let csv='Flight,Route,Time,Status,Gate\n';
   flights.forEach(f=>{
-    csv+=`${f.no},${f.route},${f.time},${f.status},${f.gate}\n`;
+    csv+=`${f.no},${f.route},${f.time||''},${f.status},${f.gate}\n`;
   });
   const blob=new Blob([csv],{type:'text/csv'});
   const a=document.createElement('a');
@@ -223,21 +211,18 @@ function exportCSV(){
   a.click();
 }
 
-function save(){
-  localStorage.setItem('flights',JSON.stringify(flights));
-}
+function save(){localStorage.setItem('flights',JSON.stringify(flights))}
 
 function badge(s){
-  if(s==='On Time')return '<span class="pill ok">On Time</span>';
-  if(s==='Delayed')return '<span class="pill warn">Delayed</span>';
-  return '<span class="pill bad">Cancelled</span>';
+  if(s==='On Time')return'<span class="pill ok">On Time</span>';
+  if(s==='Delayed')return'<span class="pill warn">Delayed</span>';
+  return'<span class="pill bad">Cancelled</span>';
 }
 
 function render(){
-  table.innerHTML = flights.map((f,i)=>`
+  table.innerHTML=flights.map((f,i)=>`
   <tr>
-    <td>${f.no}</td>
-    <td>${f.route}</td>
+    <td>${f.no}</td><td>${f.route}</td>
     <td>${role==='admin'
       ? `<input type="time" value="${f.time||''}" onchange="updateTime(${i},this.value)">`
       : (f.time||'—')}</td>
@@ -253,9 +238,9 @@ function render(){
       : ''}</td>
   </tr>`).join('');
 
-  kFlights.innerText = flights.length;
-  kOn.innerText = flights.filter(f=>f.status==='On Time').length;
-  kDelay.innerText = flights.filter(f=>f.status==='Delayed').length;
+  kFlights.innerText=flights.length;
+  kOn.innerText=flights.filter(f=>f.status==='On Time').length;
+  kDelay.innerText=flights.filter(f=>f.status==='Delayed').length;
 }
 render();
 
@@ -269,7 +254,6 @@ function drawCharts(){
       flights.filter(f=>f.status==='Cancelled').length
     ]}]}
   });
-
   new Chart(gateChart,{
     type:'bar',
     data:{labels:gates,
@@ -278,10 +262,9 @@ function drawCharts(){
 }
 
 function logout(){
-  localStorage.removeItem('role'); // keep flights + theme
+  localStorage.removeItem('role');
   location.href='index.html';
 }
 </script>
-
 </body>
 </html>
