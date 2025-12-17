@@ -4,29 +4,24 @@
 <meta charset="UTF-8">
 <title>Airport Management | Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
 *{box-sizing:border-box;font-family:Poppins}
 body{
   margin:0;height:100vh;
-  background:linear-gradient(135deg,#020617,#020617 60%,#020617);
+  background:linear-gradient(135deg,#020617,#020617);
   display:flex;align-items:center;justify-content:center;
   color:white;
 }
-.login-card{
+.card{
   width:360px;
   background:#0f172a;
   border:1px solid #1f2937;
   border-radius:18px;
   padding:32px;
   box-shadow:0 30px 70px rgba(0,0,0,.6);
-  animation:fade .8s ease;
 }
-@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1}}
-h2{margin-bottom:6px}
-p{color:#94a3b8;font-size:14px;margin-bottom:20px}
 input,select{
   width:100%;padding:12px;margin-bottom:14px;
   background:#020617;color:white;
@@ -38,30 +33,22 @@ button{
   background:linear-gradient(180deg,#38bdf8,#0284c7);
   color:#021018;font-weight:600;
   cursor:pointer;
-  transition:transform .15s ease;
 }
-button:hover{transform:translateY(-1px)}
 .small{font-size:12px;color:#94a3b8;margin-top:10px}
 </style>
 </head>
 
 <body>
-
-<div class="login-card">
+<div class="card">
   <h2>✈️ Airport Login</h2>
-  <p>Secure access to airport operations</p>
-
   <input id="u" placeholder="Username">
   <input id="p" type="password" placeholder="Password">
-
   <select id="r">
     <option value="admin">Admin</option>
     <option value="staff">Staff</option>
     <option value="passenger">Passenger</option>
   </select>
-
   <button onclick="login()">Login</button>
-
   <div class="small">
     Admin: admin / admin123<br>
     Staff: staff / staff123<br>
@@ -82,6 +69,5 @@ function login(){
   }else alert('Invalid credentials');
 }
 </script>
-
 </body>
 </html>
