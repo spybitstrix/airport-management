@@ -12,28 +12,48 @@
 *{box-sizing:border-box;font-family:Poppins}
 body{margin:0;background:#020617;color:#e5e7eb}
 header{
-  padding:16px 24px;border-bottom:1px solid #1f2937;
+  padding:16px 24px;
+  border-bottom:1px solid #1f2937;
   display:flex;justify-content:space-between;align-items:center;
 }
-nav a{margin-left:16px;color:#94a3b8;cursor:pointer;text-decoration:none}
+nav a{
+  margin-left:16px;
+  color:#94a3b8;
+  text-decoration:none;
+  cursor:pointer;
+}
 nav a:hover{color:#38bdf8}
 main{max-width:1200px;margin:auto;padding:24px}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
 .card{
-  background:#0f172a;border:1px solid #1f2937;
-  border-radius:16px;padding:16px;margin-bottom:16px;
+  background:#0f172a;
+  border:1px solid #1f2937;
+  border-radius:16px;
+  padding:16px;
 }
+.span-3{grid-column:span 3}
+.span-6{grid-column:span 6}
+.span-12{grid-column:span 12}
 input,select,button{
-  padding:10px;margin:5px 0;
+  padding:10px;margin:6px 0;
   background:#020617;color:white;
   border:1px solid #1f2937;border-radius:8px;
 }
-button{background:#38bdf8;color:#021018;font-weight:600}
+button{
+  background:#38bdf8;color:#021018;
+  font-weight:600;cursor:pointer;
+}
 table{width:100%;border-collapse:collapse}
 th,td{padding:10px;border-bottom:1px solid #1f2937;text-align:left}
 th{color:#94a3b8}
 .hidden{display:none}
+.pill{padding:4px 10px;border-radius:999px;font-size:12px}
+.ok{background:rgba(34,197,94,.15);color:#22c55e}
+.warn{background:rgba(245,158,11,.15);color:#f59e0b}
+.bad{background:rgba(239,68,68,.15);color:#ef4444}
 </style>
 </head>
+
 <body>
 
 <script>
@@ -53,8 +73,16 @@ if(!role)location.href='index.html';
 
 <main>
 
+<!-- DASHBOARD -->
 <section id="dashboard">
-<div class="card" id="adminPanel">
+<div class="grid">
+
+<div class="card span-3"><h3>Total Flights</h3><h1 id="kFlights">0</h1></div>
+<div class="card span-3"><h3>On Time</h3><h1 id="kOn">0</h1></div>
+<div class="card span-3"><h3>Delayed</h3><h1 id="kDelay">0</h1></div>
+<div class="card span-3"><h3>Active Gates</h3><h1 id="kGate">0</h1></div>
+
+<div class="card span-12" id="adminPanel">
 <h3>Add Flight</h3>
 <input id="fNo" placeholder="Flight No">
 <input id="fRoute" placeholder="Route">
@@ -63,21 +91,28 @@ if(!role)location.href='index.html';
 <option>Delayed</option>
 <option>Cancelled</option>
 </select>
-<button onclick="addFlight()">Add</button>
+<button onclick="addFlight()">Add Flight</button>
 </div>
 
-<div class="card">
+<div class="card span-12">
 <h3>Flights</h3>
 <table>
-<thead><tr><th>Flight</th><th>Route</th><th>Status</th><th>Gate</th><th>Action</th></tr></thead>
+<thead>
+<tr><th>Flight</th><th>Route</th><th>Status</th><th>Gate</th><th>Action</th></tr>
+</thead>
 <tbody id="table"></tbody>
 </table>
 </div>
+
+</div>
 </section>
 
+<!-- ANALYTICS -->
 <section id="analytics" class="hidden">
-<div class="card"><canvas id="delayChart"></canvas></div>
-<div class="card"><canvas id="gateChart"></canvas></div>
+<div class="grid">
+<div class="card span-6"><canvas id="delayChart"></canvas></div>
+<div class="card span-6"><canvas id="gateChart"></canvas></div>
+</div>
 </section>
 
 </main>
@@ -104,9 +139,10 @@ function addFlight(){
   let gate=fStatus.value==='On Time'?assignGate():'—';
   flights.push({no:fNo.value,route:fRoute.value,status:fStatus.value,gate});
   save();render();
+  fNo.value=fRoute.value='';
 }
 
-function cancel(i){
+function cancelFlight(i){
   flights[i].status='Cancelled';
   flights[i].gate='—';
   save();render();
@@ -116,23 +152,37 @@ function save(){
   localStorage.setItem('flights',JSON.stringify(flights));
 }
 
+function badge(s){
+  if(s==='On Time')return '<span class=\"pill ok\">On Time</span>';
+  if(s==='Delayed')return '<span class=\"pill warn\">Delayed</span>';
+  return '<span class=\"pill bad\">Cancelled</span>';
+}
+
 function render(){
   table.innerHTML=flights.map((f,i)=>`
-  <tr>
-    <td>${f.no}</td><td>${f.route}</td>
-    <td>${f.status}</td><td>${f.gate}</td>
-    <td>${role==='admin'?`<button onclick="cancel(${i})">Cancel</button>`:''}</td>
-  </tr>`).join('');
+    <tr>
+      <td>${f.no}</td>
+      <td>${f.route}</td>
+      <td>${badge(f.status)}</td>
+      <td>${f.gate}</td>
+      <td>${role==='admin'?`<button onclick=\"cancelFlight(${i})\">Cancel</button>`:''}</td>
+    </tr>`).join('');
+
+  kFlights.innerText=flights.length;
+  kOn.innerText=flights.filter(f=>f.status==='On Time').length;
+  kDelay.innerText=flights.filter(f=>f.status==='Delayed').length;
+  kGate.innerText=gates.length;
 }
 render();
 
 function drawCharts(){
   new Chart(delayChart,{
     type:'pie',
-    data:{labels:['On Time','Delayed'],
+    data:{labels:['On Time','Delayed','Cancelled'],
     datasets:[{data:[
       flights.filter(f=>f.status==='On Time').length,
-      flights.filter(f=>f.status==='Delayed').length
+      flights.filter(f=>f.status==='Delayed').length,
+      flights.filter(f=>f.status==='Cancelled').length
     ]}]}
   });
 
