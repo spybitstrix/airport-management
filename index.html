@@ -3,190 +3,163 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Airport Management System</title>
+  <title>Smart Airport Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --muted: #94a3b8;
-      --text: #e5e7eb;
-      --accent: #38bdf8;
-      --ok: #22c55e;
-      --warn: #f59e0b;
-      --bad: #ef4444;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu;
-      background: linear-gradient(180deg, #020617, #020617 40%, #020617);
-      color: var(--text);
-    }
-    header {
-      padding: 16px 24px; border-bottom: 1px solid #1f2937;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    header h1 { margin: 0; font-size: 20px; letter-spacing: .3px; }
-    nav a { color: var(--muted); margin-left: 16px; text-decoration: none; }
-    nav a.active, nav a:hover { color: var(--accent); }
-    main { padding: 24px; max-width: 1200px; margin: 0 auto; }
-    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
-    .card {
-      grid-column: span 12; background: radial-gradient(1200px 200px at 10% -20%, #0b1220, transparent), var(--card);
-      border: 1px solid #1f2937; border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.2);
-    }
-    @media (min-width: 768px) {
-      .span-6 { grid-column: span 6; }
-      .span-4 { grid-column: span 4; }
-      .span-3 { grid-column: span 3; }
-    }
-    h2 { margin: 0 0 8px; font-size: 16px; }
-    .muted { color: var(--muted); }
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { padding: 10px; border-bottom: 1px solid #1f2937; text-align: left; }
-    th { color: var(--muted); font-weight: 600; }
-    .pill { padding: 4px 10px; border-radius: 999px; font-size: 12px; }
-    .ok { background: rgba(34,197,94,.15); color: var(--ok); }
-    .warn { background: rgba(245,158,11,.15); color: var(--warn); }
-    .bad { background: rgba(239,68,68,.15); color: var(--bad); }
-    .kpi { display: flex; align-items: center; justify-content: space-between; }
-    .kpi strong { font-size: 24px; }
-    button {
-      background: linear-gradient(180deg, #0ea5e9, #0284c7); color: #021018;
-      border: none; border-radius: 12px; padding: 10px 14px; cursor: pointer; font-weight: 600;
-    }
-    button.secondary { background: transparent; color: var(--accent); border: 1px solid #1f2937; }
-    footer { padding: 16px; text-align: center; color: var(--muted); }
-    .hidden { display: none; }
+    *{box-sizing:border-box;font-family:'Poppins',sans-serif}
+    body{margin:0;min-height:100vh;background:#020617;color:#e5e7eb}
+    :root{--primary:#38bdf8;--card:#0f172a;--border:#1f2937;--muted:#94a3b8}
+    .hidden{display:none}
+    .center{display:flex;align-items:center;justify-content:center;height:100vh}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px}
+    button{padding:10px 14px;border:none;border-radius:10px;background:linear-gradient(180deg,#38bdf8,#0284c7);font-weight:600;cursor:pointer}
+    input,select{width:100%;padding:10px;margin-bottom:12px;background:#020617;border:1px solid var(--border);border-radius:10px;color:#e5e7eb}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--border)}
+    nav a{margin-left:16px;color:var(--muted);text-decoration:none}
+    nav a.active,nav a:hover{color:var(--primary)}
+    main{padding:24px;max-width:1200px;margin:auto}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left}
+    th{color:var(--muted)}
+    .pill{padding:4px 10px;border-radius:999px;font-size:12px}
+    .ok{background:rgba(34,197,94,.15);color:#22c55e}
+    .warn{background:rgba(245,158,11,.15);color:#f59e0b}
   </style>
 </head>
 <body>
+
+<!-- LOGIN -->
+<div id="login" class="center">
+  <div class="card" style="width:340px">
+    <h2>✈️ Airport Login</h2>
+    <p style="color:var(--muted)">Select role to continue</p>
+    <input id="username" placeholder="Username" />
+    <input id="password" type="password" placeholder="Password" />
+    <select id="role">
+      <option value="admin">Admin</option>
+      <option value="staff">Staff</option>
+      <option value="passenger">Passenger</option>
+    </select>
+    <button onclick="login()" style="width:100%">Login</button>
+    <p style="color:var(--muted);font-size:13px;margin-top:10px">
+      Admin: admin/admin123 | Staff: staff/staff123 | Passenger: any
+    </p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
   <header>
-    <h1>✈️ Airport Management System</h1>
-    <nav>
-      <a href="#" class="active" data-tab="dashboard">Dashboard</a>
-      <a href="#" data-tab="flights">Flights</a>
-      <a href="#" data-tab="gates">Gates</a>
-      <a href="#" data-tab="staff">Staff</a>
-    </nav>
+    <h2>Smart Airport Management</h2>
+    <nav id="nav"></nav>
   </header>
 
   <main>
-    <!-- DASHBOARD -->
-    <section id="dashboard" class="grid">
-      <div class="card span-3 kpi"><div><h2>Flights Today</h2><div class="muted">Arrivals + Departures</div></div><strong id="kpiFlights">42</strong></div>
-      <div class="card span-3 kpi"><div><h2>On Time</h2><div class="muted">Performance</div></div><strong id="kpiOnTime">88%</strong></div>
-      <div class="card span-3 kpi"><div><h2>Delayed</h2><div class="muted">Current</div></div><strong id="kpiDelayed">5</strong></div>
-      <div class="card span-3 kpi"><div><h2>Active Gates</h2><div class="muted">In Use</div></div><strong id="kpiGates">12</strong></div>
-
-      <div class="card span-6">
-        <h2>Live Flights</h2>
-        <table>
-          <thead><tr><th>Flight</th><th>Route</th><th>Time</th><th>Status</th></tr></thead>
-          <tbody id="liveFlights"></tbody>
-        </table>
+    <!-- ADMIN -->
+    <section id="admin" class="hidden">
+      <h3>Admin Dashboard – Flight & Gate Control</h3>
+      <div class="card">
+        <h4>Add Flight</h4>
+        <input id="fNo" placeholder="Flight No">
+        <input id="fRoute" placeholder="Route (DEL → BOM)">
+        <select id="fStatus">
+          <option>On Time</option>
+          <option>Delayed</option>
+          <option>Cancelled</option>
+        </select>
+        <button onclick="addFlight()">Add Flight</button>
       </div>
-
-      <div class="card span-6">
-        <h2>Announcements</h2>
-        <ul class="muted">
-          <li>Security drill at Terminal B (14:00–14:30)</li>
-          <li>Gate C3 under maintenance</li>
-          <li>Weather advisory: light rain expected</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- FLIGHTS -->
-    <section id="flights" class="grid hidden">
-      <div class="card span-12">
-        <h2>Flight Management</h2>
-        <div style="display:flex; gap:8px; margin-bottom:8px;">
-          <input id="flightNo" placeholder="Flight No" />
-          <input id="route" placeholder="Route" />
-          <input id="time" placeholder="Time" />
-          <select id="status"><option>On Time</option><option>Delayed</option><option>Cancelled</option></select>
-          <button onclick="addFlight()">Add</button>
-        </div>
+      <div class="card" style="margin-top:16px">
+        <h4>Flights & Gate Allocation</h4>
         <table>
-          <thead><tr><th>Flight</th><th>Route</th><th>Time</th><th>Status</th></tr></thead>
-          <tbody id="flightTable"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- GATES -->
-    <section id="gates" class="grid hidden">
-      <div class="card span-12">
-        <h2>Gate Allocation</h2>
-        <table>
-          <thead><tr><th>Gate</th><th>Flight</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>A1</td><td>AI 202</td><td><span class="pill ok">Occupied</span></td></tr>
-            <tr><td>B4</td><td>—</td><td><span class="pill warn">Available</span></td></tr>
-            <tr><td>C3</td><td>—</td><td><span class="pill bad">Maintenance</span></td></tr>
-          </tbody>
+          <thead><tr><th>Flight</th><th>Route</th><th>Status</th><th>Gate</th><th>Action</th></tr></thead>
+          <tbody id="adminFlights"></tbody>
         </table>
       </div>
     </section>
 
     <!-- STAFF -->
-    <section id="staff" class="grid hidden">
-      <div class="card span-12">
-        <h2>Staff Roster</h2>
+    <section id="staff" class="hidden">
+      <h3>Staff Dashboard</h3>
+      <div class="card">
         <table>
-          <thead><tr><th>Name</th><th>Role</th><th>Shift</th></tr></thead>
-          <tbody>
-            <tr><td>R. Kumar</td><td>ATC</td><td>Morning</td></tr>
-            <tr><td>S. Mehta</td><td>Ground Ops</td><td>Evening</td></tr>
-            <tr><td>A. Das</td><td>Security</td><td>Night</td></tr>
-          </tbody>
+          <thead><tr><th>Flight</th><th>Route</th><th>Status</th><th>Gate</th></tr></thead>
+          <tbody id="staffFlights"></tbody>
         </table>
       </div>
     </section>
+
+    <!-- PASSENGER -->
+    <section id="passenger" class="hidden">
+      <h3>Passenger Information Display</h3>
+      <div class="card">
+        <table>
+          <tr><th>Flight</th><th>Route</th><th>Status</th></tr>
+          <tr><td>AI 202</td><td>DEL → BOM</td><td><span class="pill ok">On Time</span></td></tr>
+          <tr><td>6E 445</td><td>BLR → HYD</td><td><span class="pill warn">Delayed</span></td></tr>
+        </table>
+      </div>
+    </section>
+      
+    <!-- ANALYTICS -->
+    <section id="analytics" class="hidden">
+      <h3>Analytics</h3>
+      <div class="card"><canvas id="delayChart"></canvas></div>
+      <div class="card" style="margin-top:16px"><canvas id="gateChart"></canvas></div>
+    </section>
   </main>
+</div>
 
-  <footer>© 2025 Airport Management System • Static demo for GitHub Pages</footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const loginBox=document.getElementById('login');
+  const app=document.getElementById('app');
+  const nav=document.getElementById('nav');
+  let flights=JSON.parse(localStorage.getItem('flights'))||[];
+  const gates=['A1','A2','B1','B2','C1'];
 
-  <script>
-    const tabs = document.querySelectorAll('nav a');
-    const sections = document.querySelectorAll('main section');
-    tabs.forEach(a => a.onclick = (e) => {
-      e.preventDefault();
-      tabs.forEach(x => x.classList.remove('active'));
-      a.classList.add('active');
-      sections.forEach(s => s.classList.add('hidden'));
-      document.getElementById(a.dataset.tab).classList.remove('hidden');
-    });
+  if(localStorage.getItem('role')) showApp(localStorage.getItem('role'));
 
-    const demoFlights = [
-      { f: 'AI 202', r: 'DEL → BOM', t: '10:30', s: 'On Time' },
-      { f: '6E 445', r: 'BLR → HYD', t: '11:10', s: 'Delayed' },
-      { f: 'UK 991', r: 'DEL → GOI', t: '12:00', s: 'On Time' }
-    ];
+  function login(){
+    const u=username.value,p=password.value,r=role.value;
+    if(r==='admin'&&u==='admin'&&p==='admin123'||r==='staff'&&u==='staff'&&p==='staff123'||r==='passenger'){
+      localStorage.setItem('role',r);showApp(r);
+    } else alert('Invalid credentials');
+  }
+  function logout(){localStorage.clear();location.reload();}
 
-    function pill(status){
-      if(status === 'On Time') return '<span class="pill ok">On Time</span>';
-      if(status === 'Delayed') return '<span class="pill warn">Delayed</span>';
-      return '<span class="pill bad">Cancelled</span>';
-    }
-
-    function render(){
-      const live = document.getElementById('liveFlights');
-      const table = document.getElementById('flightTable');
-      live.innerHTML = table.innerHTML = demoFlights.map(x =>
-        `<tr><td>${x.f}</td><td>${x.r}</td><td>${x.t}</td><td>${pill(x.s)}</td></tr>`
-      ).join('');
-    }
-
-    function addFlight(){
-      const f = flightNo.value.trim();
-      if(!f) return;
-      demoFlights.push({ f, r: route.value, t: time.value, s: status.value });
-      render();
-      flightNo.value = route.value = time.value = '';
-    }
-
+  function showApp(r){
+    loginBox.classList.add('hidden');app.classList.remove('hidden');
+    nav.innerHTML=`<a class='active'>${r.toUpperCase()}</a>${r!=='passenger'?"<a href='#' onclick=\"showSection('analytics')\">Analytics</a>":''}<a href='#' onclick='logout()'>Logout</a>`;
+    document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+    document.getElementById(r).classList.remove('hidden');
     render();
-  </script>
+    if(r!=='passenger') renderCharts();
+  }
+
+  function showSection(id){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
+
+  function assignGate(){const used=flights.map(f=>f.gate).filter(Boolean);return gates.find(g=>!used.includes(g))||'—';}
+
+  function addFlight(){if(!fNo.value)return;let gate='—';if(fStatus.value==='On Time')gate=assignGate();flights.push({no:fNo.value,route:fRoute.value,status:fStatus.value,gate});save();render();}
+
+  function cancelFlight(i){flights[i].status='Cancelled';flights[i].gate='—';save();render();}
+
+  function save(){localStorage.setItem('flights',JSON.stringify(flights));}
+
+  function render(){
+    adminFlights&&(adminFlights.innerHTML=flights.map((f,i)=>`<tr><td>${f.no}</td><td>${f.route}</td><td>${f.status}</td><td>${f.gate}</td><td><button onclick='cancelFlight(${i})'>Cancel</button></td></tr>`).join(''));
+    staffFlights&&(staffFlights.innerHTML=flights.map(f=>`<tr><td>${f.no}</td><td>${f.route}</td><td>${f.status}</td><td>${f.gate}</td></tr>`).join(''));
+  }
+
+  function renderCharts(){
+    const delayed=flights.filter(f=>f.status==='Delayed').length;
+    const ontime=flights.filter(f=>f.status==='On Time').length;
+    new Chart(delayChart,{type:'pie',data:{labels:['On Time','Delayed'],datasets:[{data:[ontime,delayed]}]}});
+    const used=gates.map(g=>flights.filter(f=>f.gate===g).length);
+    new Chart(gateChart,{type:'bar',data:{labels:gates,datasets:[{data:used}]}});
+  }
+</script>
+
 </body>
 </html>
