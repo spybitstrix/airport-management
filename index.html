@@ -1,182 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Airport Management System</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Airport Management | Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #020617;
-      color: #e5e7eb;
-    }
-
-    .hidden { display: none; }
-    .center {
       height: 100vh;
+      background: linear-gradient(135deg, #020617, #020617);
       display: flex;
       align-items: center;
       justify-content: center;
+      color: white;
     }
 
-    .box {
+    .login-card {
+      width: 340px;
       background: #0f172a;
       border: 1px solid #1f2937;
-      border-radius: 12px;
-      padding: 20px;
-      width: 320px;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.4);
+      animation: fadeIn .8s ease;
     }
 
-    input, select, button {
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 { margin-bottom: 8px; }
+    p { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+
+    input, select {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
+      padding: 12px;
+      margin-bottom: 14px;
+      border-radius: 10px;
+      border: 1px solid #1f2937;
       background: #020617;
       color: white;
-      border: 1px solid #1f2937;
-      border-radius: 8px;
     }
 
     button {
-      background: #38bdf8;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    header {
-      padding: 15px;
-      border-bottom: 1px solid #1f2937;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    nav a {
-      margin-left: 15px;
-      cursor: pointer;
-      color: #94a3b8;
-      text-decoration: none;
-    }
-
-    nav a:hover { color: #38bdf8; }
-
-    main { padding: 20px; }
-
-    table {
       width: 100%;
-      border-collapse: collapse;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #38bdf8, #0284c7);
+      color: #021018;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .15s ease;
     }
 
-    th, td {
-      border-bottom: 1px solid #1f2937;
-      padding: 8px;
-      text-align: left;
+    button:hover { transform: translateY(-1px); }
+
+    .hint {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #94a3b8;
     }
   </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login" class="center">
-  <div class="box">
-    <h2>✈️ Airport Login</h2>
+<div class="login-card">
+  <h2>✈️ Airport Login</h2>
+  <p>Secure access to airport operations</p>
 
-    <input id="username" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
+  <input id="u" placeholder="Username">
+  <input id="p" type="password" placeholder="Password">
 
-    <select id="role">
-      <option value="admin">Admin</option>
-      <option value="staff">Staff</option>
-      <option value="passenger">Passenger</option>
-    </select>
+  <select id="r">
+    <option value="admin">Admin</option>
+    <option value="staff">Staff</option>
+    <option value="passenger">Passenger</option>
+  </select>
 
-    <button onclick="login()">Login</button>
+  <button onclick="login()">Login</button>
 
-    <p style="font-size:12px;color:#94a3b8;margin-top:10px">
-      Admin: admin/admin123<br>
-      Staff: staff/staff123<br>
-      Passenger: any
-    </p>
+  <div class="hint">
+    Admin: admin / admin123<br>
+    Staff: staff / staff123<br>
+    Passenger: any
   </div>
 </div>
 
-<!-- APP -->
-<div id="app" class="hidden">
-  <header>
-    <strong id="roleTitle"></strong>
-    <nav>
-      <a onclick="logout()">Logout</a>
-    </nav>
-  </header>
-
-  <main>
-    <h3>Flights</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Flight</th>
-          <th>Route</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="flightTable"></tbody>
-    </table>
-  </main>
-</div>
-
 <script>
-  const loginDiv = document.getElementById("login");
-  const appDiv = document.getElementById("app");
-  const roleTitle = document.getElementById("roleTitle");
-  const flightTable = document.getElementById("flightTable");
+function login() {
+  const uVal = u.value;
+  const pVal = p.value;
+  const rVal = r.value;
 
-  const demoFlights = [
-    { no: "AI 202", route: "DEL → BOM", status: "On Time" },
-    { no: "6E 445", route: "BLR → HYD", status: "Delayed" }
-  ];
-
-  function login() {
-    const u = username.value;
-    const p = password.value;
-    const r = role.value;
-
-    if (
-      (r === "admin" && u === "admin" && p === "admin123") ||
-      (r === "staff" && u === "staff" && p === "staff123") ||
-      r === "passenger"
-    ) {
-      localStorage.setItem("role", r);
-      showApp(r);
-    } else {
-      alert("Invalid credentials");
-    }
+  if (
+    (rVal === 'admin' && uVal === 'admin' && pVal === 'admin123') ||
+    (rVal === 'staff' && uVal === 'staff' && pVal === 'staff123') ||
+    rVal === 'passenger'
+  ) {
+    localStorage.setItem('role', rVal);
+    window.location.href = 'dashboard.html';
+  } else {
+    alert('Invalid credentials');
   }
-
-  function showApp(role) {
-    loginDiv.classList.add("hidden");
-    appDiv.classList.remove("hidden");
-
-    roleTitle.innerText = role.toUpperCase() + " DASHBOARD";
-
-    flightTable.innerHTML = demoFlights.map(f => `
-      <tr>
-        <td>${f.no}</td>
-        <td>${f.route}</td>
-        <td>${f.status}</td>
-      </tr>
-    `).join("");
-  }
-
-  function logout() {
-    localStorage.clear();
-    location.reload();
-  }
-
-  // Auto-login if already logged in
-  const savedRole = localStorage.getItem("role");
-  if (savedRole) showApp(savedRole);
+}
 </script>
 
 </body>
