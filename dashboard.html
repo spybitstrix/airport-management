@@ -11,35 +11,103 @@
 <style>
 *{box-sizing:border-box;font-family:Poppins}
 body{margin:0;background:#020617;color:#e5e7eb}
+
+/* HEADER */
 header{
-  padding:16px 24px;border-bottom:1px solid #1f2937;
-  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 18px;
+  border-bottom:1px solid #1f2937;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:space-between;
+  align-items:center;
 }
-nav a{margin-left:16px;color:#94a3b8;cursor:pointer;text-decoration:none}
+nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+}
+nav a{
+  color:#94a3b8;
+  cursor:pointer;
+  text-decoration:none;
+  font-size:14px;
+}
 nav a:hover{color:#38bdf8}
-main{max-width:1200px;margin:auto;padding:24px}
-.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+
+/* LAYOUT */
+main{max-width:1200px;margin:auto;padding:16px}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:16px;
+}
 .card{
-  background:#0f172a;border:1px solid #1f2937;
-  border-radius:16px;padding:16px;
+  background:#0f172a;
+  border:1px solid #1f2937;
+  border-radius:16px;
+  padding:16px;
 }
 .span-3{grid-column:span 3}
 .span-6{grid-column:span 6}
 .span-12{grid-column:span 12}
-input,select,button{
-  padding:8px;margin:4px 0;
-  background:#020617;color:white;
-  border:1px solid #1f2937;border-radius:8px;
+
+/* MOBILE GRID */
+@media(max-width:768px){
+  .span-3,.span-6,.span-12{grid-column:span 12}
 }
-button{background:#38bdf8;color:#021018;font-weight:600;cursor:pointer}
-table{width:100%;border-collapse:collapse}
-th,td{padding:10px;border-bottom:1px solid #1f2937;text-align:left}
+
+/* FORMS */
+input,select,button{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  background:#020617;
+  color:white;
+  border:1px solid #1f2937;
+  border-radius:10px;
+  font-size:14px;
+}
+button{
+  background:#38bdf8;
+  color:#021018;
+  font-weight:600;
+  cursor:pointer;
+}
+button.danger{background:#ef4444;color:white}
+
+/* TABLE */
+.table-wrap{
+  overflow-x:auto;
+}
+table{
+  width:100%;
+  min-width:700px;
+  border-collapse:collapse;
+}
+th,td{
+  padding:10px;
+  border-bottom:1px solid #1f2937;
+  text-align:left;
+}
 th{color:#94a3b8}
-.hidden{display:none}
+
+/* STATUS */
 .pill{padding:4px 10px;border-radius:999px;font-size:12px}
 .ok{background:rgba(34,197,94,.15);color:#22c55e}
 .warn{background:rgba(245,158,11,.15);color:#f59e0b}
 .bad{background:rgba(239,68,68,.15);color:#ef4444}
+
+.hidden{display:none}
+
+/* KPI */
+.kpi h1{margin:4px 0;font-size:28px}
+@media(max-width:768px){
+  .kpi h1{font-size:22px}
+}
+
+/* CHARTS */
+canvas{max-width:100%}
 </style>
 </head>
 
@@ -65,12 +133,12 @@ if(!role) location.href='index.html';
 <section id="dashboard">
 <div class="grid">
 
-<div class="card span-3"><h3>Total Flights</h3><h1 id="kFlights">0</h1></div>
-<div class="card span-3"><h3>On Time</h3><h1 id="kOn">0</h1></div>
-<div class="card span-3"><h3>Delayed</h3><h1 id="kDelay">0</h1></div>
-<div class="card span-3"><h3>Gates</h3><h1>5</h1></div>
+<div class="card span-3 kpi"><h3>Total Flights</h3><h1 id="kFlights">0</h1></div>
+<div class="card span-3 kpi"><h3>On Time</h3><h1 id="kOn">0</h1></div>
+<div class="card span-3 kpi"><h3>Delayed</h3><h1 id="kDelay">0</h1></div>
+<div class="card span-3 kpi"><h3>Gates</h3><h1>5</h1></div>
 
-<!-- ADMIN ADD -->
+<!-- ADMIN -->
 <div class="card span-12" id="adminPanel">
 <h3>Add Flight</h3>
 <input id="fNo" placeholder="Flight No">
@@ -90,9 +158,10 @@ if(!role) location.href='index.html';
 <button onclick="addFlight()">Add Flight</button>
 </div>
 
-<!-- FLIGHTS TABLE -->
+<!-- TABLE -->
 <div class="card span-12">
 <h3>Flights</h3>
+<div class="table-wrap">
 <table>
 <thead>
 <tr>
@@ -101,11 +170,12 @@ if(!role) location.href='index.html';
 <th>Time</th>
 <th>Status</th>
 <th>Gate</th>
-<th>Action</th>
+<th>Actions</th>
 </tr>
 </thead>
 <tbody id="table"></tbody>
 </table>
+</div>
 </div>
 
 </div>
@@ -141,25 +211,18 @@ function autoGate(){
 
 function addFlight(){
   flights.push({
-    no: fNo.value,
-    route: fRoute.value,
-    time: fTime.value,
-    status: fStatus.value,
-    gate: fGate.value || autoGate()
+    no:fNo.value,
+    route:fRoute.value,
+    time:fTime.value,
+    status:fStatus.value,
+    gate:fGate.value || autoGate()
   });
   save(); render();
   fNo.value=fRoute.value=fTime.value=fGate.value='';
 }
 
-function updateTime(i,val){
-  flights[i].time = val;
-  save();
-}
-
-function updateGate(i,val){
-  flights[i].gate = val;
-  save();
-}
+function updateTime(i,v){flights[i].time=v;save()}
+function updateGate(i,v){flights[i].gate=v;save()}
 
 function cancelFlight(i){
   flights[i].status='Cancelled';
@@ -167,13 +230,20 @@ function cancelFlight(i){
   save(); render();
 }
 
+function deleteFlight(i){
+  if(confirm('Delete this flight permanently?')){
+    flights.splice(i,1);
+    save(); render();
+  }
+}
+
 function save(){
   localStorage.setItem('flights',JSON.stringify(flights));
 }
 
 function badge(s){
-  if(s==='On Time') return '<span class="pill ok">On Time</span>';
-  if(s==='Delayed') return '<span class="pill warn">Delayed</span>';
+  if(s==='On Time')return '<span class="pill ok">On Time</span>';
+  if(s==='Delayed')return '<span class="pill warn">Delayed</span>';
   return '<span class="pill bad">Cancelled</span>';
 }
 
@@ -195,7 +265,12 @@ function render(){
           </select>`
         : f.gate}
     </td>
-    <td>${role==='admin'?`<button onclick="cancelFlight(${i})">Cancel</button>`:''}</td>
+    <td>
+      ${role==='admin'
+        ? `<button onclick="cancelFlight(${i})">Cancel</button>
+           <button class="danger" onclick="deleteFlight(${i})">Delete</button>`
+        : ''}
+    </td>
   </tr>`).join('');
 
   kFlights.innerText = flights.length;
